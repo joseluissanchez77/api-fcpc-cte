@@ -47,7 +47,7 @@ class AuthController extends Controller
             $user = Auth::user();
             $token = $user->createToken('token')->plainTextToken;
             $cookie = cookie('cookie_token', $token, 60*24);
-            return $this->information($token)->withoutCookie($cookie);
+            return $this->information(['Bearer'=>$token,"dataUser"=>$user])->withoutCookie($cookie);
 
         }
         throw new ConflictException(__('messages.error-credential-login'));

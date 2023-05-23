@@ -20,14 +20,32 @@ class CustomerController extends Controller
      */
     public function index(Request $request)
     {
-        
+        // DB::enableQueryLog();
         $sort = isset($request->sort) ? $request->sort : 'id';
         $type_sort = isset($request->type_sort) ? $request->type_sort : 'desc';
         $size = isset($request->size) ? $request->size : 100;
 
         $company = Customer::select();
-        $query =  $company->orderBy($sort, $type_sort)->paginate($size);
 
+        if (isset($request->search) && !is_null($request->search)) {
+            $fields = [
+                'primer_nombre',
+                'segundo_nombre',
+                'primer_apellido',
+                'segundo_apellido',
+                'identificacion',
+            ];
+            $company = $company->where(function ($query) use ($fields,$request) {
+                for ($i = 0; $i < count($fields); $i++) {
+                    $query->where($fields[$i], 'like', '%' . $request->search . '%')
+                    ->orwhere($fields[$i], 'like', '%' . $request->search . '%');
+                }
+            });
+
+        }
+
+        $query =  $company->orderBy($sort, $type_sort)->paginate($size);
+        // dump( DB::getQueryLog());//42
         return $this->success($query);
 
     }
