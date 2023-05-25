@@ -96,5 +96,6 @@ class OrdenCompraController extends Controller
         $establishment = Establishment::findOrFail($request->establishment_id)->id;
         $query = PointEmission::where('establishment_id', $establishment);
         return $query->count() == 0 ?  [] : $query->get();
+        
     }
 }
